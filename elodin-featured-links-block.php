@@ -66,44 +66,111 @@ function elodin_featured_links_render( $block, $content = '', $is_preview = fals
     //* Default ID
     $id = 'featured-links-' . $block['id'];
     
+    //* Set defaults
+    $style = null;
+    $columns = count( get_field( 'links' ) );
+        
     //* Get settings
-    $background_color = get_field( 'background_color' );
-    
     $section_background_color = get_field( 'section_background_color' );
-
+    $countitems = get_field( 'columns' );
+    $links = get_field( 'links' );
+    $height = get_field( 'height' );
+    
     // Create id attribute allowing for custom "anchor" value.
-    if( !empty($block['anchor']) ) 
+    if( isset($block['anchor']) ) 
         $id = $block['anchor'];
 
     // Create class attribute allowing for custom "className" and "align" values.
-    if( !empty($block['className']) )
+    if( isset($block['className']) )
         $className .= ' ' . $block['className'];
 
-    if( !empty($block['align']) )
+    if( isset($block['align']) )
         $className .= ' align' . $block['align'];
+        
+    if ( isset($columns) ) {
+        $className .= ' columns-' . $columns;
+    } else {
+        $className .= ' columns-' . $countitems;
+    }
                         
     //* color matching for background colors
     $colors = current( (array) get_theme_support( 'editor-color-palette' ) );
     if ( $colors ) {
         foreach( $colors as $color ) {
-            if ( in_array( $background_color, $color ) ) {
+            if ( in_array( $section_background_color, $color ) ) {
                 $className .= ' has-' . $color['slug'] . '-background-color';
-                $background_color = null;
+                $section_background_color = null;
             }            
         }
     }
     
-    if ( $background_color )
-        $style = sprintf( 'background-color:%s;', $background_color );
+    if ( $section_background_color )
+        $style = sprintf( 'background-color:%s;', $section_background_color );
             
+    // echo '<pre>';
+    // print_r( $links );
+    // echo '</pre>';
+        
     //* Render
     printf( '<div id="%s" class="%s" style="%s">', $id, $className, $style );
     
-        //* Background image 
-        if ( $background_image )
-            printf( '<div class="featured-links-background-image" style="background-image:url(%s);"></div>', $background_image );
+        foreach ( $links as $link ) {
+            
+            // echo '<pre>';
+            // print_r( $link );
+            // echo '</pre>';
+                        
+            $url = $link['url'];
+            $link_target = $link['link_target'];
+            $button_label = $link['button_label'];
+            $heading = $link['heading'];
+            $description = $link['description'];
+            
+            if ( !$button_label )
+                $button_label = 'More information';
+            
+            $background_image = $link['background_image']['sizes']['large'];
+            // $background_image_url = wp_get_attachment_image_src( $background_image_id, 'large' );
+                        
+            echo '<div class="featured-link">';
+            
+                echo '<div class="featured-link-content-area">';
+                    
+                    if ( $heading )
+                        printf( '<h3>%s</h3>', $heading );
+                        
+                    if ( $description )
+                        printf( '<div class="description">%s</div>', $description );
+                        
+                    if ( $url )
+                        printf( '<div class="buttons-wrap"><span class="button">%s</span></div>', $button_label );
+                
+                echo '</div>';
+            
+                if ( $url )
+                    printf( '<a class="overlay" target="%s" href="%s"></a>', $link_target, $url );
+                    
+                if ( $background_image )
+                    printf( '<div class="background-image" style="background-image:url(%s);"></div>', $background_image );
+            
+            echo '</div>'; // .featured-link
+        }
         
-        
+        if ( isset( $height ) ) {
+            ?>
+            <style>
+                /* Padding */
+                @media( min-width: 960px ) { 
+                    #featured-links-<?php echo $block['id']; ?> {
+                        .inner {
+                            min-height: <?php echo $height; ?>px !important;
+                        }
+                    }
+                }
+            </style>
+            <?php
+        }
+                
         if ( isset($padding_top) || isset($padding_bottom) || isset($padding_left) || isset($padding_right) ) {
             ?>
             <style>
