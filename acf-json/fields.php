@@ -177,21 +177,6 @@ acf_add_local_field_group(array(
 					'mime_types' => '',
 				),
 				array(
-					'key' => 'field_5fcbfa581310b',
-					'label' => 'Background color',
-					'name' => 'background_color',
-					'type' => 'color_picker',
-					'instructions' => '',
-					'required' => 0,
-					'conditional_logic' => 0,
-					'wrapper' => array(
-						'width' => '',
-						'class' => '',
-						'id' => '',
-					),
-					'default_value' => '',
-				),
-				array(
 					'key' => 'field_5fcbf9ce78c36',
 					'label' => 'Heading (optional)',
 					'name' => 'heading',
